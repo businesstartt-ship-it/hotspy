@@ -1,793 +1,1922 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Hotspy — Spice, Traced to Source</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,450;0,9..144,600;1,9..144,450&family=Work+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<style>
-  :root{
-    --ink:#1C1410;
-    --ink-soft:#2A2018;
-    --parchment:#F0E6D6;
-    --parchment-dim:#E4D7C0;
-    --oxblood:#6B2737;
-    --oxblood-light:#8A3548;
-    --gold:#B8935A;
-    --gold-light:#D9C08C;
-    --sage:#6B7255;
-    --charcoal:#2A2420;
-    --line: rgba(42,36,32,0.14);
-    --line-dark: rgba(240,230,214,0.14);
-    --shadow: 0 12px 32px rgba(28,20,16,0.14);
-    --radius: 2px;
-  }
-  *{box-sizing:border-box;}
-  html{scroll-behavior:smooth;}
-  @media (prefers-reduced-motion: reduce){
-    html{scroll-behavior:auto;}
-    *{animation-duration:0.01ms !important; transition-duration:0.01ms !important;}
-  }
-  body{
-    margin:0;
-    background:var(--parchment);
-    color:var(--charcoal);
-    font-family:'Work Sans', sans-serif;
-    font-weight:400;
-    line-height:1.5;
-    -webkit-font-smoothing:antialiased;
-  }
-  h1,h2,h3,h4{
-    font-family:'Fraunces', serif;
-    font-weight:450;
-    margin:0;
-    letter-spacing:-0.01em;
-  }
-  a{color:inherit;text-decoration:none;}
-  button{font-family:inherit;cursor:pointer;}
-  img{max-width:100%;display:block;}
-  .mono{font-family:'JetBrains Mono', monospace;}
-  .eyebrow{
-    font-family:'JetBrains Mono', monospace;
-    font-size:11px;
-    letter-spacing:0.18em;
-    text-transform:uppercase;
-    color:var(--oxblood);
-  }
-  .wrap{max-width:1180px; margin:0 auto; padding:0 32px;}
-  :focus-visible{ outline:2px solid var(--oxblood); outline-offset:3px; }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Hotspy — Pure Organic Homemade Masala. Handcrafted spice blends from Bangladesh. No preservatives. No additives. Just tradition.">
+    <meta property="og:title" content="Hotspy | Pure Organic Homemade Masala">
+    <meta property="og:description" content="Handcrafted organic spice blends. 100% natural, no preservatives, made with tradition.">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+    <title>Hotspy — Pure Organic Homemade Masala</title>
 
-  /* ---------- Announcement bar ---------- */
-  .announce{
-    background:var(--ink);
-    color:var(--gold-light);
-    text-align:center;
-    font-family:'JetBrains Mono', monospace;
-    font-size:11.5px;
-    letter-spacing:0.06em;
-    padding:9px 16px;
-  }
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
 
-  /* ---------- Header ---------- */
-  header{
-    position:sticky; top:0; z-index:40;
-    background:rgba(240,230,214,0.92);
-    backdrop-filter:blur(10px);
-    border-bottom:1px solid var(--line);
-  }
-  .nav{
-    display:flex; align-items:center; justify-content:space-between;
-    padding:18px 32px;
-    max-width:1180px; margin:0 auto;
-  }
-  .logo{
-    font-family:'Fraunces', serif;
-    font-size:24px;
-    font-weight:600;
-    letter-spacing:0.02em;
-  }
-  .logo span{color:var(--oxblood);}
-  .nav-links{
-    display:flex; gap:36px;
-    list-style:none; margin:0; padding:0;
-    font-size:14px;
-  }
-  .nav-links a{
-    position:relative; padding-bottom:4px;
-  }
-  .nav-links a::after{
-    content:'';
-    position:absolute; left:0; right:100%; bottom:0;
-    height:1px; background:var(--oxblood);
-    transition:right 0.25s ease;
-  }
-  .nav-links a:hover::after{right:0;}
-  .nav-right{display:flex; align-items:center; gap:22px;}
-  .icon-btn{
-    background:none; border:none; padding:4px;
-    display:flex; align-items:center; color:var(--charcoal);
-    position:relative;
-  }
-  .icon-btn svg{width:19px; height:19px;}
-  .cart-count{
-    position:absolute; top:-6px; right:-8px;
-    background:var(--oxblood); color:var(--parchment);
-    font-family:'JetBrains Mono', monospace;
-    font-size:10px; width:16px; height:16px; border-radius:50%;
-    display:flex; align-items:center; justify-content:center;
-  }
-  .menu-toggle{display:none;}
-  .search-box{
-    display:flex; align-items:center; gap:8px;
-    border:1px solid var(--line); padding:6px 12px;
-    background:var(--parchment);
-  }
-  .search-box input{
-    border:none; background:none; outline:none;
-    font-family:'Work Sans'; font-size:13px; width:130px; color:var(--charcoal);
-  }
+    <style>
+        :root {
+            --bg: #0F0F0F;
+            --bg-elevated: #161616;
+            --bg-card: #1A1A1A;
+            --surface: #222222;
+            --text: #F5F0E8;
+            --text-dim: #A89F91;
+            --text-muted: #6B655C;
+            --accent: #C45C26;
+            --accent-warm: #D4A574;
+            --accent-glow: rgba(196, 92, 38, 0.15);
+            --border: rgba(245, 240, 232, 0.08);
+            --border-hover: rgba(245, 240, 232, 0.18);
+            --radius: 4px;
+            --radius-lg: 8px;
+            --transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            --transition-fast: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
 
-  /* ---------- Hero ---------- */
-  .hero{
-    background:var(--ink);
-    color:var(--parchment);
-    position:relative;
-    overflow:hidden;
-    padding:96px 32px 80px;
-  }
-  .hero-grain{
-    position:absolute; inset:0;
-    background-image: radial-gradient(rgba(184,147,90,0.08) 1px, transparent 1px);
-    background-size:18px 18px;
-    pointer-events:none;
-  }
-  .hero-inner{
-    max-width:1180px; margin:0 auto;
-    display:grid; grid-template-columns:1.1fr 0.9fr; gap:60px;
-    align-items:center; position:relative;
-  }
-  .hero h1{
-    font-size:clamp(40px, 5.4vw, 68px);
-    line-height:1.03;
-    font-weight:450;
-  }
-  .hero h1 em{
-    font-style:italic; color:var(--gold-light);
-  }
-  .hero p.lede{
-    margin-top:22px; max-width:440px;
-    font-size:16.5px; color:rgba(240,230,214,0.72);
-  }
-  .hero-cta{
-    display:flex; gap:16px; margin-top:36px; flex-wrap:wrap;
-  }
-  .btn{
-    display:inline-flex; align-items:center; justify-content:center;
-    padding:14px 28px; font-size:13.5px; letter-spacing:0.03em;
-    border:1px solid transparent; transition:all 0.2s ease;
-    font-family:'Work Sans'; font-weight:500;
-  }
-  .btn-gold{ background:var(--gold); color:var(--ink); }
-  .btn-gold:hover{ background:var(--gold-light); }
-  .btn-outline{ border-color:rgba(240,230,214,0.35); color:var(--parchment); }
-  .btn-outline:hover{ border-color:var(--gold-light); color:var(--gold-light); }
-  .btn-dark{ background:var(--ink); color:var(--parchment); }
-  .btn-dark:hover{ background:var(--ink-soft); }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
 
-  .ledger{
-    border:1px solid rgba(240,230,214,0.18);
-    padding:26px 24px;
-  }
-  .ledger-title{
-    font-family:'JetBrains Mono'; font-size:10.5px; letter-spacing:0.16em;
-    text-transform:uppercase; color:var(--gold-light); margin-bottom:16px;
-  }
-  .ledger-row{
-    display:flex; justify-content:space-between; align-items:baseline;
-    padding:10px 0; border-bottom:1px dashed rgba(240,230,214,0.15);
-    font-size:14px;
-  }
-  .ledger-row:last-child{border-bottom:none;}
-  .ledger-row .origin{font-family:'Fraunces', serif; font-style:italic; font-size:16px;}
-  .ledger-row .stat{font-family:'JetBrains Mono'; font-size:11px; color:var(--gold-light);}
+        body {
+            font-family: 'DM Sans', -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
 
-  /* ---------- Trust strip ---------- */
-  .trust{
-    border-bottom:1px solid var(--line);
-    background:var(--parchment-dim);
-  }
-  .trust-inner{
-    max-width:1180px; margin:0 auto; padding:26px 32px;
-    display:grid; grid-template-columns:repeat(4,1fr); gap:20px;
-  }
-  .trust-item{
-    display:flex; align-items:center; gap:12px;
-    font-size:12.5px; color:var(--charcoal);
-  }
-  .trust-item svg{width:20px; height:20px; flex-shrink:0; color:var(--oxblood);}
+        h1, h2, h3, h4, .serif {
+            font-family: 'Cormorant Garamond', Georgia, serif;
+            font-weight: 400;
+            letter-spacing: -0.02em;
+        }
 
-  /* ---------- Section headers ---------- */
-  .section{padding:88px 32px;}
-  .section-head{
-    display:flex; justify-content:space-between; align-items:flex-end;
-    margin-bottom:44px; flex-wrap:wrap; gap:20px;
-  }
-  .section-head h2{font-size:clamp(28px,3.4vw,40px);}
-  .section-head p{max-width:380px; font-size:14.5px; color:rgba(42,36,32,0.65);}
+        /* ===== NAV ===== */
+        .nav {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 1000;
+            padding: 0 48px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: var(--transition-fast);
+        }
+        .nav.scrolled {
+            background: rgba(15, 15, 15, 0.92);
+            backdrop-filter: blur(20px) saturate(1.2);
+            border-bottom: 1px solid var(--border);
+            height: 64px;
+        }
 
-  /* ---------- Category tabs ---------- */
-  .tabs{
-    display:flex; gap:8px; margin-bottom:36px; flex-wrap:wrap;
-  }
-  .tab{
-    padding:9px 18px; border:1px solid var(--line);
-    background:transparent; font-size:12.5px; letter-spacing:0.02em;
-    color:var(--charcoal); transition:all 0.15s ease;
-  }
-  .tab.active, .tab:hover{
-    background:var(--ink); color:var(--parchment); border-color:var(--ink);
-  }
+        .nav-logo {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 26px;
+            font-weight: 600;
+            color: var(--text);
+            text-decoration: none;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+        .nav-logo span { color: var(--accent); }
 
-  /* ---------- Product grid ---------- */
-  .grid{
-    display:grid; grid-template-columns:repeat(4, 1fr); gap:2px;
-    background:var(--line);
-    border:1px solid var(--line);
-  }
-  .card{
-    background:var(--parchment);
-    padding:0;
-    display:flex; flex-direction:column;
-    position:relative;
-  }
-  .card-media{
-    aspect-ratio:1/1;
-    position:relative;
-    display:flex; align-items:center; justify-content:center;
-    overflow:hidden;
-  }
-  .card-media .swatch{
-    width:70%; height:70%; border-radius:50%;
-    box-shadow:inset 0 0 0 1px rgba(28,20,16,0.08);
-  }
-  .stamp{
-    position:absolute; top:14px; right:14px;
-    width:58px; height:58px; border-radius:50%;
-    border:1px dashed var(--oxblood);
-    display:flex; align-items:center; justify-content:center;
-    text-align:center; transform:rotate(-8deg);
-    background:rgba(240,230,214,0.85);
-  }
-  .stamp span{
-    font-family:'JetBrains Mono'; font-size:8px; letter-spacing:0.04em;
-    color:var(--oxblood); line-height:1.3; text-transform:uppercase;
-  }
-  .card-body{
-    padding:20px 20px 22px; display:flex; flex-direction:column; gap:8px; flex:1;
-  }
-  .card-body .kicker{
-    font-family:'JetBrains Mono'; font-size:10px; letter-spacing:0.1em;
-    text-transform:uppercase; color:var(--sage);
-  }
-  .card-body h3{font-size:19px; font-weight:450;}
-  .card-body .desc{font-size:12.5px; color:rgba(42,36,32,0.6); min-height:32px;}
-  .card-foot{
-    display:flex; align-items:center; justify-content:space-between;
-    margin-top:10px; padding-top:14px; border-top:1px solid var(--line);
-  }
-  .price{font-family:'JetBrains Mono'; font-size:14px; font-weight:500;}
-  .add-btn{
-    background:var(--ink); color:var(--parchment);
-    border:none; padding:8px 16px; font-size:11.5px; letter-spacing:0.04em;
-    transition:background 0.15s ease;
-  }
-  .add-btn:hover{background:var(--oxblood);}
-  .add-btn.added{background:var(--sage);}
+        .nav-links {
+            display: flex;
+            gap: 40px;
+            list-style: none;
+        }
+        .nav-links a {
+            color: var(--text-dim);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 500;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            transition: var(--transition-fast);
+            position: relative;
+        }
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -6px; left: 0;
+            width: 0; height: 1px;
+            background: var(--accent);
+            transition: var(--transition-fast);
+        }
+        .nav-links a:hover { color: var(--text); }
+        .nav-links a:hover::after { width: 100%; }
 
-  /* ---------- Story section ---------- */
-  .story{background:var(--parchment-dim);}
-  .story-inner{
-    max-width:1180px; margin:0 auto;
-    display:grid; grid-template-columns:0.9fr 1.1fr; gap:64px; align-items:center;
-  }
-  .story-visual{
-    aspect-ratio:4/5; background:var(--ink); position:relative; overflow:hidden;
-  }
-  .story-visual .map-dot{
-    position:absolute; width:8px; height:8px; border-radius:50%;
-    background:var(--gold-light);
-  }
-  .story-visual .map-dot::after{
-    content:''; position:absolute; inset:-6px; border:1px solid var(--gold-light);
-    border-radius:50%; opacity:0.5;
-  }
-  .story-visual .map-label{
-    position:absolute; font-family:'JetBrains Mono'; font-size:9.5px;
-    color:var(--gold-light); letter-spacing:0.05em; white-space:nowrap;
-  }
-  .story-copy h2{font-size:clamp(30px,3.6vw,42px); margin-bottom:22px;}
-  .story-copy p{font-size:15.5px; color:rgba(42,36,32,0.72); max-width:520px; margin-bottom:16px;}
-  .story-stats{display:flex; gap:40px; margin-top:32px;}
-  .story-stat .num{font-family:'Fraunces'; font-size:32px; font-style:italic; color:var(--oxblood);}
-  .story-stat .label{font-family:'JetBrains Mono'; font-size:10px; letter-spacing:0.08em; text-transform:uppercase; margin-top:4px; color:rgba(42,36,32,0.6);}
+        .nav-cart {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-dim);
+            font-size: 13px;
+            font-weight: 500;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            cursor: pointer;
+            background: none;
+            border: none;
+            transition: var(--transition-fast);
+        }
+        .nav-cart:hover { color: var(--text); }
+        .nav-cart svg { stroke: currentColor; }
+        .nav-cart-count {
+            width: 18px; height: 18px;
+            background: var(--accent);
+            color: var(--bg);
+            border-radius: 50%;
+            font-size: 10px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'DM Sans', sans-serif;
+        }
 
-  /* ---------- Reviews ---------- */
-  .reviews-grid{
-    display:grid; grid-template-columns:repeat(3,1fr); gap:28px;
-  }
-  .review-card{
-    border:1px solid var(--line); padding:28px 26px; background:var(--parchment);
-  }
-  .review-card .stars{color:var(--gold); font-size:13px; letter-spacing:2px; margin-bottom:14px;}
-  .review-card p{font-size:14.5px; color:var(--charcoal); font-style:italic; font-family:'Fraunces'; line-height:1.5;}
-  .review-card .who{
-    margin-top:16px; font-family:'JetBrains Mono'; font-size:11px;
-    color:rgba(42,36,32,0.55); text-transform:uppercase; letter-spacing:0.05em;
-  }
+        .nav-mobile-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--text);
+            cursor: pointer;
+        }
 
-  /* ---------- Newsletter ---------- */
-  .news{
-    background:var(--ink); color:var(--parchment); text-align:center;
-    padding:80px 32px;
-  }
-  .news h2{font-size:clamp(26px,3.2vw,38px); max-width:560px; margin:0 auto 14px;}
-  .news p{color:rgba(240,230,214,0.65); font-size:14.5px; margin-bottom:30px;}
-  .news-form{
-    display:flex; max-width:420px; margin:0 auto; border:1px solid rgba(240,230,214,0.3);
-  }
-  .news-form input{
-    flex:1; background:none; border:none; padding:14px 16px; color:var(--parchment);
-    font-family:'Work Sans'; font-size:13.5px; outline:none;
-  }
-  .news-form input::placeholder{color:rgba(240,230,214,0.45);}
-  .news-form button{
-    background:var(--gold); color:var(--ink); border:none; padding:0 22px;
-    font-size:12.5px; letter-spacing:0.03em; font-weight:500;
-  }
-  .news-note{font-family:'JetBrains Mono'; font-size:11px; margin-top:14px; color:var(--gold-light); min-height:16px;}
+        /* ===== HERO ===== */
+        .hero {
+            position: relative;
+            height: 100vh;
+            min-height: 700px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        .hero-bg {
+            position: absolute;
+            inset: 0;
+            background: url('https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=1920&h=1080&fit=crop&q=80') center/cover no-repeat;
+        }
+        .hero-bg::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to bottom, rgba(15,15,15,0.4) 0%, rgba(15,15,15,0.7) 60%, var(--bg) 100%);
+        }
 
-  /* ---------- Footer ---------- */
-  footer{background:var(--ink-soft); color:rgba(240,230,214,0.75); padding:64px 32px 28px;}
-  .foot-inner{
-    max-width:1180px; margin:0 auto;
-    display:grid; grid-template-columns:1.3fr repeat(3,1fr); gap:40px;
-  }
-  .foot-brand .logo{color:var(--parchment); margin-bottom:14px;}
-  .foot-brand p{font-size:13px; color:rgba(240,230,214,0.5); max-width:260px;}
-  .foot-col h4{
-    font-family:'JetBrains Mono'; font-size:11px; letter-spacing:0.1em;
-    text-transform:uppercase; color:var(--gold-light); margin-bottom:16px; font-weight:400;
-  }
-  .foot-col ul{list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:10px;}
-  .foot-col a{font-size:13.5px; color:rgba(240,230,214,0.75);}
-  .foot-col a:hover{color:var(--gold-light);}
-  .foot-bottom{
-    max-width:1180px; margin:48px auto 0; padding-top:24px;
-    border-top:1px solid rgba(240,230,214,0.12);
-    display:flex; justify-content:space-between; font-size:11.5px;
-    color:rgba(240,230,214,0.45); flex-wrap:wrap; gap:10px;
-  }
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            max-width: 800px;
+            padding: 0 24px;
+        }
 
-  /* ---------- Cart drawer ---------- */
-  .overlay{
-    position:fixed; inset:0; background:rgba(28,20,16,0.5);
-    opacity:0; pointer-events:none; transition:opacity 0.25s ease; z-index:60;
-  }
-  .overlay.open{opacity:1; pointer-events:auto;}
-  .drawer{
-    position:fixed; top:0; right:0; height:100%; width:400px; max-width:88vw;
-    background:var(--parchment); z-index:61;
-    transform:translateX(100%); transition:transform 0.3s ease;
-    display:flex; flex-direction:column;
-  }
-  .drawer.open{transform:translateX(0);}
-  .drawer-head{
-    display:flex; justify-content:space-between; align-items:center;
-    padding:22px 24px; border-bottom:1px solid var(--line);
-  }
-  .drawer-head h3{font-size:19px;}
-  .drawer-items{flex:1; overflow-y:auto; padding:10px 24px;}
-  .cart-item{
-    display:flex; gap:14px; padding:16px 0; border-bottom:1px solid var(--line);
-  }
-  .cart-item .swatch-sm{
-    width:56px; height:56px; border-radius:50%; flex-shrink:0;
-    box-shadow:inset 0 0 0 1px rgba(28,20,16,0.08);
-  }
-  .cart-item-info{flex:1;}
-  .cart-item-info .nm{font-family:'Fraunces'; font-size:15px;}
-  .cart-item-info .pr{font-family:'JetBrains Mono'; font-size:12px; color:var(--oxblood); margin-top:2px;}
-  .qty-row{display:flex; align-items:center; gap:10px; margin-top:8px;}
-  .qty-row button{
-    width:22px; height:22px; border:1px solid var(--line); background:none;
-    font-size:13px; display:flex; align-items:center; justify-content:center;
-  }
-  .qty-row span{font-family:'JetBrains Mono'; font-size:12.5px; min-width:14px; text-align:center;}
-  .remove-x{
-    background:none; border:none; font-size:11px; color:rgba(42,36,32,0.45);
-    text-decoration:underline; margin-left:auto; align-self:flex-start;
-  }
-  .drawer-foot{padding:22px 24px; border-top:1px solid var(--line);}
-  .subtotal-row{display:flex; justify-content:space-between; font-size:14.5px; margin-bottom:16px;}
-  .subtotal-row .amt{font-family:'JetBrains Mono'; font-weight:500;}
-  .empty-cart{
-    padding:60px 20px; text-align:center; color:rgba(42,36,32,0.5); font-size:13.5px;
-  }
+        .hero-label {
+            font-size: 12px;
+            font-weight: 500;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            color: var(--accent-warm);
+            margin-bottom: 24px;
+            display: inline-block;
+            opacity: 0;
+            animation: fadeUp 1s ease 0.3s forwards;
+        }
 
-  /* ---------- Toast ---------- */
-  .toast{
-    position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(20px);
-    background:var(--ink); color:var(--parchment); padding:13px 24px;
-    font-size:13px; opacity:0; pointer-events:none; transition:all 0.25s ease;
-    z-index:80; font-family:'JetBrains Mono';
-  }
-  .toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
+        .hero h1 {
+            font-size: clamp(48px, 7vw, 96px);
+            line-height: 1.05;
+            margin-bottom: 28px;
+            opacity: 0;
+            animation: fadeUp 1s ease 0.5s forwards;
+        }
+        .hero h1 em {
+            font-style: italic;
+            color: var(--accent-warm);
+        }
 
-  /* ---------- Responsive ---------- */
-  @media (max-width: 980px){
-    .hero-inner{grid-template-columns:1fr;}
-    .story-inner{grid-template-columns:1fr;}
-    .grid{grid-template-columns:repeat(2,1fr);}
-    .reviews-grid{grid-template-columns:1fr;}
-    .foot-inner{grid-template-columns:1fr 1fr;}
-    .trust-inner{grid-template-columns:repeat(2,1fr);}
-  }
-  @media (max-width: 680px){
-    .wrap, .section, .nav{padding-left:20px; padding-right:20px;}
-    .nav-links, .search-box{display:none;}
-    .menu-toggle{display:flex;}
-    .grid{grid-template-columns:1fr;}
-    .foot-inner{grid-template-columns:1fr;}
-    .trust-inner{grid-template-columns:1fr 1fr;}
-  }
-</style>
+        .hero-sub {
+            font-size: 17px;
+            color: var(--text-dim);
+            max-width: 520px;
+            margin: 0 auto 40px;
+            line-height: 1.7;
+            opacity: 0;
+            animation: fadeUp 1s ease 0.7s forwards;
+        }
+
+        .hero-cta {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px 40px;
+            background: var(--accent);
+            color: var(--bg);
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            text-decoration: none;
+            border-radius: var(--radius);
+            transition: var(--transition-fast);
+            opacity: 0;
+            animation: fadeUp 1s ease 0.9s forwards;
+            border: none;
+            cursor: pointer;
+        }
+        .hero-cta:hover {
+            background: var(--accent-warm);
+            transform: translateY(-2px);
+        }
+
+        .hero-scroll {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-muted);
+            font-size: 11px;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            opacity: 0;
+            animation: fadeUp 1s ease 1.2s forwards;
+        }
+        .hero-scroll-line {
+            width: 1px;
+            height: 40px;
+            background: linear-gradient(to bottom, var(--text-muted), transparent);
+            animation: scrollPulse 2s ease-in-out infinite;
+        }
+        @keyframes scrollPulse {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ===== SECTIONS ===== */
+        .section {
+            padding: 140px 48px;
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+        .section-header {
+            margin-bottom: 80px;
+        }
+        .section-label {
+            font-size: 12px;
+            font-weight: 500;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 16px;
+            display: block;
+        }
+        .section-header h2 {
+            font-size: clamp(36px, 5vw, 64px);
+            line-height: 1.1;
+            margin-bottom: 20px;
+        }
+        .section-header p {
+            color: var(--text-dim);
+            font-size: 17px;
+            line-height: 1.7;
+            max-width: 560px;
+        }
+
+        /* ===== PRODUCTS ===== */
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 32px;
+        }
+
+        .product-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            transition: var(--transition);
+            cursor: pointer;
+            position: relative;
+        }
+        .product-card:hover {
+            border-color: var(--border-hover);
+            transform: translateY(-4px);
+        }
+        .product-card:hover .product-img {
+            transform: scale(1.05);
+        }
+        .product-card:hover .product-view {
+            opacity: 1;
+        }
+
+        .product-img-wrap {
+            position: relative;
+            overflow: hidden;
+            aspect-ratio: 4/3;
+        }
+        .product-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        .product-view {
+            position: absolute;
+            inset: 0;
+            background: rgba(15,15,15,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: var(--transition);
+        }
+        .product-view span {
+            padding: 12px 28px;
+            border: 1px solid var(--text);
+            color: var(--text);
+            font-size: 12px;
+            font-weight: 500;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            background: rgba(15,15,15,0.6);
+            backdrop-filter: blur(4px);
+        }
+
+        .product-info {
+            padding: 28px;
+        }
+        .product-info h3 {
+            font-size: 22px;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        .product-info p {
+            color: var(--text-dim);
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        .product-meta {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .product-price {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--accent-warm);
+            font-family: 'DM Sans', sans-serif;
+        }
+        .product-price span {
+            color: var(--text-muted);
+            text-decoration: line-through;
+            margin-left: 10px;
+            font-weight: 400;
+            font-size: 14px;
+        }
+        .product-add {
+            width: 40px; height: 40px;
+            border: 1px solid var(--border);
+            background: transparent;
+            color: var(--text);
+            border-radius: var(--radius);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition-fast);
+            font-size: 18px;
+        }
+        .product-add:hover {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: var(--bg);
+        }
+
+        /* ===== BESTSELLER ===== */
+        .bestseller-section {
+            background: var(--bg-elevated);
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+        }
+        .bestseller-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1px;
+            background: var(--border);
+        }
+        .bestseller-item {
+            background: var(--bg-elevated);
+            padding: 60px 40px;
+            text-align: center;
+            transition: var(--transition);
+        }
+        .bestseller-item:hover {
+            background: var(--bg-card);
+        }
+        .bestseller-rank {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 56px;
+            font-weight: 300;
+            color: var(--accent);
+            line-height: 1;
+            margin-bottom: 16px;
+            opacity: 0.6;
+        }
+        .bestseller-item h3 {
+            font-size: 24px;
+            margin-bottom: 12px;
+            font-weight: 500;
+        }
+        .bestseller-item p {
+            color: var(--text-dim);
+            font-size: 15px;
+            line-height: 1.6;
+            margin-bottom: 24px;
+        }
+        .bestseller-price {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--accent-warm);
+            margin-bottom: 24px;
+            font-family: 'DM Sans', sans-serif;
+        }
+        .bestseller-btn {
+            padding: 14px 32px;
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text);
+            font-size: 12px;
+            font-weight: 500;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: var(--transition-fast);
+            font-family: 'DM Sans', sans-serif;
+        }
+        .bestseller-btn:hover {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: var(--bg);
+        }
+
+        /* ===== STORY ===== */
+        .story-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 80px;
+            align-items: center;
+        }
+        .story-img {
+            position: relative;
+        }
+        .story-img img {
+            width: 100%;
+            border-radius: var(--radius-lg);
+            filter: grayscale(20%) contrast(1.1);
+            transition: var(--transition);
+        }
+        .story-img:hover img {
+            filter: grayscale(0%) contrast(1);
+        }
+        .story-img::before {
+            content: '';
+            position: absolute;
+            inset: -20px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            z-index: -1;
+            opacity: 0;
+            transition: var(--transition);
+        }
+        .story-img:hover::before {
+            opacity: 1;
+            inset: -12px;
+        }
+
+        .story-content h2 {
+            font-size: clamp(32px, 4vw, 52px);
+            margin-bottom: 24px;
+            line-height: 1.1;
+        }
+        .story-content h2 em {
+            font-style: italic;
+            color: var(--accent-warm);
+        }
+        .story-content p {
+            color: var(--text-dim);
+            font-size: 16px;
+            line-height: 1.8;
+            margin-bottom: 20px;
+        }
+
+        .story-steps {
+            margin-top: 40px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+        .story-step {
+            display: flex;
+            align-items: flex-start;
+            gap: 20px;
+            opacity: 0;
+            transform: translateX(-20px);
+            transition: all 0.6s ease;
+        }
+        .story-step.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        .story-step-num {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 32px;
+            font-weight: 300;
+            color: var(--accent);
+            line-height: 1;
+            min-width: 40px;
+        }
+        .story-step h4 {
+            font-size: 18px;
+            font-weight: 500;
+            margin-bottom: 4px;
+            font-family: 'DM Sans', sans-serif;
+            letter-spacing: 0.02em;
+        }
+        .story-step p {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin: 0;
+        }
+
+        /* ===== REVIEWS MARQUEE ===== */
+        .reviews-section {
+            background: var(--bg-elevated);
+            border-top: 1px solid var(--border);
+            overflow: hidden;
+            padding: 100px 0;
+        }
+        .reviews-section .section-header {
+            text-align: center;
+            padding: 0 48px;
+            max-width: 1280px;
+            margin: 0 auto 60px;
+        }
+        .reviews-section .section-header h2,
+        .reviews-section .section-header p {
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .reviews-track {
+            display: flex;
+            gap: 24px;
+            width: max-content;
+            animation: marquee 50s linear infinite;
+        }
+        .reviews-track:hover { animation-play-state: paused; }
+
+        @keyframes marquee {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        .review-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 32px;
+            min-width: 380px;
+            max-width: 380px;
+            transition: var(--transition-fast);
+        }
+        .review-card:hover {
+            border-color: var(--border-hover);
+        }
+        .review-stars {
+            color: var(--accent-warm);
+            font-size: 14px;
+            letter-spacing: 0.15em;
+            margin-bottom: 20px;
+        }
+        .review-text {
+            font-size: 15px;
+            line-height: 1.7;
+            color: var(--text-dim);
+            margin-bottom: 24px;
+            font-style: italic;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 18px;
+        }
+        .review-author {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+        .review-avatar {
+            width: 40px; height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            filter: grayscale(30%);
+        }
+        .review-author h4 {
+            font-size: 14px;
+            font-weight: 600;
+            font-family: 'DM Sans', sans-serif;
+            letter-spacing: 0.02em;
+            margin-bottom: 2px;
+        }
+        .review-author p {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin: 0;
+        }
+
+        /* ===== HOW TO ORDER ===== */
+        .order-section {
+            border-top: 1px solid var(--border);
+        }
+        .order-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1px;
+            background: var(--border);
+        }
+        .order-step-box {
+            background: var(--bg);
+            padding: 48px 32px;
+            text-align: center;
+            transition: var(--transition);
+        }
+        .order-step-box:hover {
+            background: var(--bg-elevated);
+        }
+        .order-step-box h4 {
+            font-size: 14px;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+            font-family: 'DM Sans', sans-serif;
+        }
+        .order-step-box p {
+            font-size: 14px;
+            color: var(--text-dim);
+            line-height: 1.6;
+        }
+        .order-num {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 48px;
+            font-weight: 300;
+            color: var(--accent);
+            line-height: 1;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        /* ===== CONTACT ===== */
+        .contact-section {
+            border-top: 1px solid var(--border);
+        }
+        .contact-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            gap: 1px;
+            background: var(--border);
+        }
+        .contact-info-box {
+            background: var(--bg);
+            padding: 60px;
+        }
+        .contact-info-box h3 {
+            font-size: 32px;
+            margin-bottom: 40px;
+        }
+        .contact-item {
+            margin-bottom: 32px;
+            padding-bottom: 32px;
+            border-bottom: 1px solid var(--border);
+        }
+        .contact-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        .contact-item-label {
+            font-size: 11px;
+            font-weight: 500;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+        .contact-item-value {
+            font-size: 16px;
+            color: var(--text-dim);
+            line-height: 1.6;
+        }
+        .contact-item-value a {
+            color: var(--text);
+            text-decoration: none;
+            transition: var(--transition-fast);
+            border-bottom: 1px solid transparent;
+        }
+        .contact-item-value a:hover {
+            color: var(--accent-warm);
+            border-bottom-color: var(--accent-warm);
+        }
+
+        .contact-map-box {
+            background: var(--bg-elevated);
+            min-height: 400px;
+        }
+        .contact-map-box iframe {
+            width: 100%;
+            height: 100%;
+            min-height: 400px;
+            border: none;
+            filter: grayscale(80%) contrast(1.1);
+        }
+
+        /* ===== FOOTER ===== */
+        .footer {
+            border-top: 1px solid var(--border);
+            padding: 60px 48px;
+        }
+        .footer-inner {
+            max-width: 1280px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .footer-logo {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 20px;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--text);
+            text-decoration: none;
+        }
+        .footer-logo span { color: var(--accent); }
+        .footer-copy {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+        .footer-links {
+            display: flex;
+            gap: 32px;
+        }
+        .footer-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 13px;
+            transition: var(--transition-fast);
+        }
+        .footer-links a:hover { color: var(--text); }
+
+        /* ===== CART SIDEBAR ===== */
+        .cart-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15,15,15,0.8);
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+            backdrop-filter: blur(8px);
+        }
+        .cart-overlay.active { opacity: 1; visibility: visible; }
+
+        .cart-sidebar {
+            position: fixed;
+            top: 0; right: 0;
+            width: 100%;
+            max-width: 440px;
+            height: 100vh;
+            background: var(--bg);
+            border-left: 1px solid var(--border);
+            z-index: 2001;
+            transform: translateX(100%);
+            transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            display: flex;
+            flex-direction: column;
+        }
+        .cart-sidebar.active { transform: translateX(0); }
+
+        .cart-header {
+            padding: 32px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .cart-header h3 {
+            font-size: 14px;
+            font-weight: 500;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+        }
+        .cart-close {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 20px;
+            cursor: pointer;
+            transition: var(--transition-fast);
+            width: 36px; height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .cart-close:hover { color: var(--text); }
+
+        .cart-items { flex: 1; overflow-y: auto; padding: 24px 32px; }
+        .cart-empty {
+            text-align: center;
+            padding: 80px 24px;
+            color: var(--text-muted);
+        }
+        .cart-empty p:first-child {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 20px;
+            color: var(--text-dim);
+            margin-bottom: 8px;
+        }
+
+        .cart-item {
+            display: flex;
+            gap: 16px;
+            padding: 16px 0;
+            border-bottom: 1px solid var(--border);
+            animation: fadeIn 0.4s ease;
+        }
+        .cart-item img {
+            width: 64px; height: 64px;
+            object-fit: cover;
+            border-radius: var(--radius);
+        }
+        .cart-item-info { flex: 1; }
+        .cart-item-info h4 {
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 4px;
+            letter-spacing: 0.02em;
+        }
+        .cart-item-info p {
+            color: var(--accent-warm);
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        .cart-qty {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .cart-qty button {
+            width: 24px; height: 24px;
+            border: 1px solid var(--border);
+            background: transparent;
+            color: var(--text-dim);
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition-fast);
+        }
+        .cart-qty button:hover {
+            border-color: var(--text-dim);
+            color: var(--text);
+        }
+        .cart-qty span {
+            font-size: 13px;
+            color: var(--text-dim);
+            min-width: 20px;
+            text-align: center;
+        }
+        .cart-remove {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 12px;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            transition: var(--transition-fast);
+            align-self: flex-start;
+            margin-top: 4px;
+        }
+        .cart-remove:hover { color: #c0392b; }
+
+        .cart-footer {
+            padding: 32px;
+            border-top: 1px solid var(--border);
+            background: var(--bg-elevated);
+        }
+        .cart-total {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+        .cart-total span:first-child {
+            font-size: 13px;
+            color: var(--text-dim);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+        .cart-total span:last-child {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--accent-warm);
+            font-family: 'DM Sans', sans-serif;
+        }
+        .cart-whatsapp {
+            width: 100%;
+            padding: 16px;
+            background: var(--accent);
+            color: var(--bg);
+            border: none;
+            border-radius: var(--radius);
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: var(--transition-fast);
+            font-family: 'DM Sans', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        .cart-whatsapp:hover {
+            background: var(--accent-warm);
+        }
+
+        /* ===== PRODUCT DETAIL MODAL ===== */
+        .detail-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15,15,15,0.9);
+            z-index: 3000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 48px 24px;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+            backdrop-filter: blur(12px);
+        }
+        .detail-overlay.active { opacity: 1; visibility: visible; }
+
+        .detail-modal {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            max-width: 1000px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            transform: translateY(40px);
+            transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        .detail-overlay.active .detail-modal { transform: translateY(0); }
+
+        .detail-gallery {
+            position: relative;
+            background: var(--bg-elevated);
+            padding: 48px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .detail-main-img {
+            width: 100%;
+            aspect-ratio: 1;
+            object-fit: cover;
+            border-radius: var(--radius);
+            transition: var(--transition-fast);
+        }
+        .detail-thumbs {
+            display: flex;
+            gap: 12px;
+        }
+        .detail-thumb {
+            width: 72px; height: 72px;
+            object-fit: cover;
+            border-radius: var(--radius);
+            cursor: pointer;
+            border: 2px solid transparent;
+            opacity: 0.5;
+            transition: var(--transition-fast);
+        }
+        .detail-thumb:hover, .detail-thumb.active {
+            opacity: 1;
+            border-color: var(--accent);
+        }
+
+        .detail-info {
+            padding: 48px;
+            display: flex;
+            flex-direction: column;
+        }
+        .detail-close {
+            align-self: flex-end;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 18px;
+            cursor: pointer;
+            transition: var(--transition-fast);
+            margin-bottom: 16px;
+            width: 36px; height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .detail-close:hover { color: var(--text); }
+
+        .detail-info h2 {
+            font-size: 36px;
+            margin-bottom: 16px;
+            font-weight: 500;
+        }
+        .detail-hook {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 20px;
+            font-style: italic;
+            color: var(--text-dim);
+            line-height: 1.6;
+            margin-bottom: 28px;
+            padding-left: 20px;
+            border-left: 2px solid var(--accent);
+        }
+        .detail-price {
+            font-size: 28px;
+            font-weight: 600;
+            color: var(--accent-warm);
+            margin-bottom: 28px;
+            font-family: 'DM Sans', sans-serif;
+        }
+        .detail-price span {
+            font-size: 16px;
+            color: var(--text-muted);
+            text-decoration: line-through;
+            margin-left: 12px;
+            font-weight: 400;
+        }
+        .detail-benefits {
+            list-style: none;
+            margin-bottom: 28px;
+        }
+        .detail-benefits li {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 10px;
+            font-size: 14px;
+            color: var(--text-dim);
+        }
+        .detail-benefits li::before {
+            content: '';
+            width: 6px; height: 6px;
+            background: var(--accent);
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+        .detail-usage {
+            background: var(--bg-elevated);
+            padding: 20px;
+            border-radius: var(--radius);
+            margin-bottom: 32px;
+            border: 1px solid var(--border);
+        }
+        .detail-usage h4 {
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            font-family: 'DM Sans', sans-serif;
+        }
+        .detail-usage p {
+            font-size: 14px;
+            color: var(--text-dim);
+            line-height: 1.6;
+            margin: 0;
+        }
+        .detail-add-btn {
+            width: 100%;
+            padding: 18px;
+            background: var(--accent);
+            color: var(--bg);
+            border: none;
+            border-radius: var(--radius);
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: var(--transition-fast);
+            font-family: 'DM Sans', sans-serif;
+            margin-top: auto;
+        }
+        .detail-add-btn:hover {
+            background: var(--accent-warm);
+        }
+
+        /* ===== MOBILE MENU ===== */
+        .mobile-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15,15,15,0.95);
+            z-index: 1500;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+        }
+        .mobile-overlay.active { opacity: 1; visibility: visible; }
+
+        .mobile-menu {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%;
+            max-width: 360px;
+            height: 100vh;
+            background: var(--bg);
+            border-right: 1px solid var(--border);
+            z-index: 1501;
+            transform: translateX(-100%);
+            transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            padding: 32px;
+            display: flex;
+            flex-direction: column;
+        }
+        .mobile-menu.active { transform: translateX(0); }
+
+        .mobile-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 60px;
+        }
+        .mobile-close {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 20px;
+            cursor: pointer;
+        }
+        .mobile-links { list-style: none; }
+        .mobile-links li { margin-bottom: 4px; }
+        .mobile-links a {
+            display: block;
+            padding: 14px 0;
+            color: var(--text-dim);
+            text-decoration: none;
+            font-size: 15px;
+            font-weight: 500;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            border-bottom: 1px solid var(--border);
+            transition: var(--transition-fast);
+        }
+        .mobile-links a:hover { color: var(--text); padding-left: 8px; }
+
+        /* ===== ANIMATIONS ===== */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 1s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 1024px) {
+            .nav { padding: 0 24px; }
+            .nav-links { display: none; }
+            .nav-mobile-btn { display: block; }
+            .section { padding: 100px 24px; }
+            .products-grid { grid-template-columns: repeat(2, 1fr); }
+            .bestseller-grid { grid-template-columns: 1fr; }
+            .story-grid { grid-template-columns: 1fr; gap: 48px; }
+            .story-img { order: -1; max-width: 600px; margin: 0 auto; }
+            .order-grid { grid-template-columns: 1fr 1fr; }
+            .contact-grid { grid-template-columns: 1fr; }
+            .detail-modal { grid-template-columns: 1fr; }
+            .footer-inner { flex-direction: column; gap: 20px; text-align: center; }
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 40px; }
+            .products-grid { grid-template-columns: 1fr; max-width: 420px; margin: 0 auto; }
+            .order-grid { grid-template-columns: 1fr; }
+            .section { padding: 80px 24px; }
+            .section-header { margin-bottom: 48px; }
+            .contact-info-box { padding: 40px 24px; }
+            .detail-gallery { padding: 24px; }
+            .detail-info { padding: 24px; }
+            .detail-info h2 { font-size: 28px; }
+        }
+    </style>
+
+    <!-- Meta Pixel -->
+    <script>
+    !function(f,b,e,v,n,t,s)
+    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+    n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t,s)}(window, document,'script',
+    'https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', 'YOUR_META_PIXEL_ID');
+    fbq('track', 'PageView');
+    </script>
+    <noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=YOUR_META_PIXEL_ID&ev=PageView&noscript=1"/></noscript>
+
+    <!-- TikTok Pixel -->
+    <script>
+    !function(w,d,t){w.TiktokAnalyticsObject=t;var ttq=w[t]=w[t]||[];ttq.methods=["page","track","identify","instances","debug","on","off","once","ready","alias","group","enableCookie","disableCookie"],ttq.setAndDefer=function(t,e){t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}};for(var i=0;i<ttq.methods.length;i++)ttq.setAndDefer(ttq,ttq.methods[i]);ttq.instance=function(t){for(var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n]);return e},ttq.load=function(e,n){var i="https://analytics.tiktok.com/i18n/pixel/events.js";ttq._i=ttq._i||{},ttq._i[e]=[],ttq._i[e]._u=i,ttq._t=ttq._t||{},ttq._t[e]=+new Date,ttq._o=ttq._o||{},ttq._o[e]=n||{};var o=document.createElement("script");o.type="text/javascript",o.async=!0,o.src=i+"?sdkid="+e+"&lib="+t;var a=document.getElementsByTagName("script")[0];a.parentNode.insertBefore(o,a)};
+    ttq.load('YOUR_TIKTOK_PIXEL_ID');
+    ttq.page();
+    }(window, document, 'ttq');
+    </script>
+<base target="_blank">
 </head>
 <body>
+    <!-- Navigation -->
+    <nav class="nav" id="nav">
+        <a href="#" class="nav-logo">Hot<span>spy</span></a>
 
-<div class="announce">FREE DELIVERY ACROSS BANGLADESH ON ORDERS OVER ৳1500 &nbsp;·&nbsp; SINGLE-ORIGIN SPICE, LAB-TESTED FOR PURITY</div>
+        <ul class="nav-links">
+            <li><a href="#products">Products</a></li>
+            <li><a href="#bestseller">Best Seller</a></li>
+            <li><a href="#story">Our Story</a></li>
+            <li><a href="#reviews">Reviews</a></li>
+            <li><a href="#contact">Contact</a></li>
+        </ul>
 
-<header>
-  <nav class="nav">
-    <a href="#" class="logo">HOT<span>SPY</span></a>
-    <ul class="nav-links">
-      <li><a href="#shop">Shop</a></li>
-      <li><a href="#story">Our Story</a></li>
-      <li><a href="#reviews">Reviews</a></li>
-      <li><a href="#journal">Journal</a></li>
-    </ul>
-    <div class="nav-right">
-      <div class="search-box">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" width="15" height="15"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/></svg>
-        <input id="searchInput" type="text" placeholder="Search spices…">
-      </div>
-      <button class="icon-btn" aria-label="Open cart" onclick="toggleCart(true)">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 6h15l-1.5 9h-12z"/><path d="M6 6L4 3H2"/><circle cx="9.5" cy="20" r="1"/><circle cx="17.5" cy="20" r="1"/></svg>
-        <span class="cart-count" id="cartCount">0</span>
-      </button>
+        <div style="display:flex;align-items:center;gap:20px;">
+            <button class="nav-cart" id="navCart">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+                <span>Cart</span>
+                <span class="nav-cart-count" id="cartCount">0</span>
+            </button>
+            <button class="nav-mobile-btn" id="mobileBtn">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-overlay" id="mobileOverlay"></div>
+    <div class="mobile-menu" id="mobileMenu">
+        <div class="mobile-header">
+            <a href="#" class="nav-logo">Hot<span>spy</span></a>
+            <button class="mobile-close" id="mobileClose">✕</button>
+        </div>
+        <ul class="mobile-links">
+            <li><a href="#products">Products</a></li>
+            <li><a href="#bestseller">Best Seller</a></li>
+            <li><a href="#story">Our Story</a></li>
+            <li><a href="#reviews">Reviews</a></li>
+            <li><a href="#contact">Contact</a></li>
+        </ul>
     </div>
-  </nav>
-</header>
 
-<section class="hero">
-  <div class="hero-grain"></div>
-  <div class="hero-inner">
-    <div>
-      <p class="eyebrow" style="color:var(--gold-light)">Est. Dhaka · Single-Origin Spice House</p>
-      <h1 style="margin-top:14px;">Spice, traced <em>to source.</em></h1>
-      <p class="lede">Hotspy works directly with growers across South Asia and East Africa to bring whole and ground spice to your kitchen — batch-tested, never blended down, and roasted within weeks of harvest.</p>
-      <div class="hero-cta">
-        <a href="#shop" class="btn btn-gold">Shop the Collection</a>
-        <a href="#story" class="btn btn-outline">Our Sourcing</a>
-      </div>
-    </div>
-    <div class="ledger">
-      <div class="ledger-title">Current Manifest — Origin Log</div>
-      <div class="ledger-row"><span class="origin">Kashmir</span><span class="stat">Saffron · Lot 0091</span></div>
-      <div class="ledger-row"><span class="origin">Kerala</span><span class="stat">Green Cardamom · Lot 0114</span></div>
-      <div class="ledger-row"><span class="origin">Zanzibar</span><span class="stat">Clove · Lot 0087</span></div>
-      <div class="ledger-row"><span class="origin">Ceylon</span><span class="stat">True Cinnamon · Lot 0132</span></div>
-      <div class="ledger-row"><span class="origin">Rajasthan</span><span class="stat">Cumin Seed · Lot 0059</span></div>
-    </div>
-  </div>
-</section>
+    <!-- Hero -->
+    <section class="hero" id="home">
+        <div class="hero-bg"></div>
+        <div class="hero-content">
+            <span class="hero-label">Pure Organic Homemade Masala</span>
+            <h1>Taste the <em>Real</em><br>Bangladesh</h1>
+            <p class="hero-sub">Handcrafted spice blends made from the finest organic ingredients. No preservatives. No additives. Just the pure, rich flavors of home — delivered fresh across Bangladesh.</p>
+            <a href="#products" class="hero-cta">Explore Collection</a>
+        </div>
+        <div class="hero-scroll">
+            <span>Scroll</span>
+            <div class="hero-scroll-line"></div>
+        </div>
+    </section>
 
-<div class="trust">
-  <div class="trust-inner">
-    <div class="trust-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M20 6L9 17l-5-5"/></svg> Single-origin, not blended</div>
-    <div class="trust-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 2l3 7h7l-5.5 4.5L18 21l-6-4-6 4 1.5-7.5L2 9h7z"/></svg> Lab-tested every batch</div>
-    <div class="trust-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="7" width="18" height="13" rx="1"/><path d="M8 7V5a4 4 0 018 0v2"/></svg> Small-batch, sealed fresh</div>
-    <div class="trust-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 12h13M10 5l7 7-7 7"/></svg> Nationwide delivery</div>
-  </div>
-</div>
+    <!-- Products -->
+    <section class="section" id="products">
+        <div class="section-header reveal">
+            <span class="section-label">The Collection</span>
+            <h2>Signature Blends</h2>
+            <p>Each blend is carefully crafted using traditional recipes, using only the purest organic ingredients sourced from across Bangladesh.</p>
+        </div>
 
-<section class="section" id="shop">
-  <div class="wrap">
-    <div class="section-head">
-      <div>
-        <p class="eyebrow">The Collection</p>
-        <h2 style="margin-top:10px;">Whole, ground, and blended</h2>
-      </div>
-      <p>Currently shipping our founding spice range. Pantry staples and everyday FMCG essentials join the manifest later this year.</p>
-    </div>
-    <div class="tabs" id="tabs">
-      <button class="tab active" data-cat="all">All</button>
-      <button class="tab" data-cat="whole">Whole Spice</button>
-      <button class="tab" data-cat="ground">Ground Spice</button>
-      <button class="tab" data-cat="blend">House Blends</button>
-    </div>
-    <div class="grid" id="productGrid"></div>
-  </div>
-</section>
+        <div class="products-grid" id="productsGrid"></div>
+    </section>
 
-<section class="story" id="story">
-  <div class="story-inner wrap">
-    <div class="story-visual">
-      <div class="map-dot" style="top:28%; left:62%;"></div>
-      <div class="map-label" style="top:24%; left:66%;">KASHMIR</div>
-      <div class="map-dot" style="top:52%; left:58%;"></div>
-      <div class="map-label" style="top:55%; left:62%;">KERALA</div>
-      <div class="map-dot" style="top:44%; left:20%;"></div>
-      <div class="map-label" style="top:47%; left:24%;">ZANZIBAR</div>
-      <div class="map-dot" style="top:60%; left:74%;"></div>
-      <div class="map-label" style="top:63%; left:78%;">CEYLON</div>
-    </div>
-    <div class="story-copy">
-      <p class="eyebrow">Our Story</p>
-      <h2 style="margin-top:10px;">Built on the spice route, headed toward the pantry.</h2>
-      <p>Hotspy started with a simple frustration: most spice on the shelf has been sitting there for years, cut with filler, and stripped of the oils that make it worth using. We began sourcing single-lot spice directly from growers, testing every batch for purity, and packing it close to harvest.</p>
-      <p>What started as a spice house is the first chapter of something larger — we're building toward a full pantry of everyday FMCG staples, sourced with the same discipline.</p>
-      <div class="story-stats">
-        <div class="story-stat"><div class="num">14</div><div class="label">Grower Partners</div></div>
-        <div class="story-stat"><div class="num">6</div><div class="label">Countries of Origin</div></div>
-        <div class="story-stat"><div class="num">100%</div><div class="label">Batch-Tested</div></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="section" id="reviews">
-  <div class="wrap">
-    <div class="section-head">
-      <div>
-        <p class="eyebrow">Word of Mouth</p>
-        <h2 style="margin-top:10px;">From kitchens across the country</h2>
-      </div>
-    </div>
-    <div class="reviews-grid">
-      <div class="review-card">
-        <div class="stars">★★★★★</div>
-        <p>"The cardamom actually smells like cardamom. I didn't realise how tired the supermarket stuff had gone until I opened this tin."</p>
-        <div class="who">Nusrat A. — Dhaka</div>
-      </div>
-      <div class="review-card">
-        <div class="stars">★★★★★</div>
-        <p>"Ordered the saffron out of curiosity and it's completely changed how I cook biryani. Worth every taka."</p>
-        <div class="who">Farhan K. — Chittagong</div>
-      </div>
-      <div class="review-card">
-        <div class="stars">★★★★★</div>
-        <p>"Packaging feels premium and the origin labels are a nice touch — I actually know where my spice comes from now."</p>
-        <div class="who">Sadia R. — Sylhet</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="news" id="journal">
-  <div class="eyebrow" style="color:var(--gold-light)">Stay Stocked</div>
-  <h2>Join the manifest for early access to new lots and restocks.</h2>
-  <p>One email a month. No filler — same policy as our spice.</p>
-  <form class="news-form" onsubmit="return subscribeNews(event)">
-    <input type="email" required placeholder="you@email.com" id="newsEmail">
-    <button type="submit">Subscribe</button>
-  </form>
-  <div class="news-note" id="newsNote"></div>
-</section>
-
-<footer>
-  <div class="foot-inner">
-    <div class="foot-brand">
-      <div class="logo">HOT<span style="color:var(--gold-light)">SPY</span></div>
-      <p>Single-origin spice, traced to source and tested for purity. Based in Dhaka, shipping nationwide.</p>
-    </div>
-    <div class="foot-col">
-      <h4>Shop</h4>
-      <ul>
-        <li><a href="#shop">Whole Spice</a></li>
-        <li><a href="#shop">Ground Spice</a></li>
-        <li><a href="#shop">House Blends</a></li>
-        <li><a href="#shop">Gift Sets</a></li>
-      </ul>
-    </div>
-    <div class="foot-col">
-      <h4>Company</h4>
-      <ul>
-        <li><a href="#story">Our Sourcing</a></li>
-        <li><a href="#reviews">Reviews</a></li>
-        <li><a href="#">Wholesale</a></li>
-        <li><a href="#">Careers</a></li>
-      </ul>
-    </div>
-    <div class="foot-col">
-      <h4>Help</h4>
-      <ul>
-        <li><a href="#">Shipping & Returns</a></li>
-        <li><a href="#">Track Order</a></li>
-        <li><a href="#">Contact Us</a></li>
-        <li><a href="#">Privacy Policy</a></li>
-      </ul>
-    </div>
-  </div>
-  <div class="foot-bottom">
-    <span>© 2026 Hotspy Spice House. All rights reserved.</span>
-    <span>Cards · bKash · Nagad · Cash on Delivery</span>
-  </div>
-</footer>
-
-<div class="overlay" id="overlay" onclick="toggleCart(false)"></div>
-<div class="drawer" id="drawer" aria-label="Shopping cart">
-  <div class="drawer-head">
-    <h3>Your Cart</h3>
-    <button class="icon-btn" aria-label="Close cart" onclick="toggleCart(false)">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" width="18" height="18"><line x1="5" y1="5" x2="19" y2="19"/><line x1="19" y1="5" x2="5" y2="19"/></svg>
-    </button>
-  </div>
-  <div class="drawer-items" id="drawerItems"></div>
-  <div class="drawer-foot">
-    <div class="subtotal-row"><span>Subtotal</span><span class="amt" id="subtotalAmt">৳0</span></div>
-    <button class="btn btn-dark" style="width:100%;" onclick="checkoutMock()">Checkout</button>
-  </div>
-</div>
-
-<div class="toast" id="toast"></div>
-
-<script>
-  const PRODUCTS = [
-    { id:'p1', name:'Kashmiri Saffron', cat:'whole', origin:'Kashmir', harvest:'2026', price:1450, desc:'Hand-picked Mongra threads, deep colour and aroma.' },
-    { id:'p2', name:'Green Cardamom', cat:'whole', origin:'Kerala', harvest:'2026', price:620, desc:'Whole pods, sun-dried, intensely fragrant.' },
-    { id:'p3', name:'Ceylon Cinnamon Quills', cat:'whole', origin:'Ceylon', harvest:'2025', price:410, desc:'True cinnamon, soft bark, gently sweet.' },
-    { id:'p4', name:'Zanzibar Clove', cat:'whole', origin:'Zanzibar', harvest:'2025', price:380, desc:'High oil-content buds, sharp and warm.' },
-    { id:'p5', name:'Ground Turmeric', cat:'ground', origin:'Bogura', harvest:'2026', price:290, desc:'Single-lot, stone-ground, high curcumin.' },
-    { id:'p6', name:'Ground Cumin', cat:'ground', origin:'Rajasthan', harvest:'2026', price:260, desc:'Toasted and milled fresh to order.' },
-    { id:'p7', name:'Kashmiri Chilli Powder', cat:'ground', origin:'Kashmir', harvest:'2025', price:330, desc:'Colour-forward, gentle heat, no filler.' },
-    { id:'p8', name:'Garam Masala', cat:'blend', origin:'House Blend', harvest:'2026', price:350, desc:'Nine spices, hand-balanced in small batches.' },
-    { id:'p9', name:'Biryani Masala', cat:'blend', origin:'House Blend', harvest:'2026', price:390, desc:'Whole-spice forward, built for layered rice.' },
-    { id:'p10', name:'Panch Phoron', cat:'blend', origin:'House Blend', harvest:'2026', price:270, desc:'Classic five-spice tempering mix.' },
-    { id:'p11', name:'Star Anise', cat:'whole', origin:'Guangxi', harvest:'2025', price:340, desc:'Full pods, deep liquorice-forward aroma.' },
-    { id:'p12', name:'Ground Coriander', cat:'ground', origin:'Rajasthan', harvest:'2026', price:230, desc:'Citrusy, fresh-milled, light roast.' },
-  ];
-
-  const SWATCH = {
-    p1:'#8A3548', p2:'#6B7255', p3:'#A9713D', p4:'#3B2A22',
-    p5:'#C98A2C', p6:'#7A5230', p7:'#B8403A', p8:'#8A5A2E',
-    p9:'#6B2737', p10:'#9C7A3E', p11:'#3E2C22', p12:'#8C6B3A'
-  };
-
-  let cart = {};
-
-  function renderGrid(filter){
-    const grid = document.getElementById('productGrid');
-    const q = document.getElementById('searchInput').value.trim().toLowerCase();
-    grid.innerHTML = '';
-    PRODUCTS.filter(p => (filter==='all' || p.cat===filter) && p.name.toLowerCase().includes(q))
-      .forEach(p => {
-        const card = document.createElement('div');
-        card.className = 'card';
-        card.innerHTML = `
-          <div class="card-media" style="background:linear-gradient(160deg, ${SWATCH[p.id]}22, transparent);">
-            <div class="swatch" style="background:radial-gradient(circle at 35% 30%, ${SWATCH[p.id]}dd, ${SWATCH[p.id]});"></div>
-            <div class="stamp"><span>${p.origin}<br>${p.harvest}</span></div>
-          </div>
-          <div class="card-body">
-            <div class="kicker">${p.cat === 'whole' ? 'Whole Spice' : p.cat === 'ground' ? 'Ground Spice' : 'House Blend'}</div>
-            <h3>${p.name}</h3>
-            <div class="desc">${p.desc}</div>
-            <div class="card-foot">
-              <span class="price">৳${p.price}</span>
-              <button class="add-btn" onclick="addToCart('${p.id}', this)">Add to Cart</button>
+    <!-- Best Seller -->
+    <section class="bestseller-section" id="bestseller">
+        <div class="section" style="padding-bottom:0;">
+            <div class="section-header reveal" style="text-align:center;">
+                <span class="section-label">Top Picks</span>
+                <h2>Best Sellers</h2>
+                <p style="margin:0 auto;">The blends our customers return for, again and again.</p>
             </div>
-          </div>`;
-        grid.appendChild(card);
-      });
-  }
-
-  document.getElementById('tabs').addEventListener('click', e => {
-    if(e.target.classList.contains('tab')){
-      document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-      e.target.classList.add('active');
-      renderGrid(e.target.dataset.cat);
-    }
-  });
-  document.getElementById('searchInput').addEventListener('input', () => {
-    const active = document.querySelector('.tab.active').dataset.cat;
-    renderGrid(active);
-  });
-
-  function addToCart(id, btn){
-    cart[id] = (cart[id] || 0) + 1;
-    updateCartUI();
-    showToast(PRODUCTS.find(p=>p.id===id).name + ' added to cart');
-    if(btn){
-      btn.textContent = 'Added ✓';
-      btn.classList.add('added');
-      setTimeout(()=>{ btn.textContent='Add to Cart'; btn.classList.remove('added'); }, 1100);
-    }
-  }
-
-  function changeQty(id, delta){
-    cart[id] = (cart[id] || 0) + delta;
-    if(cart[id] <= 0) delete cart[id];
-    updateCartUI();
-  }
-
-  function removeItem(id){
-    delete cart[id];
-    updateCartUI();
-  }
-
-  function updateCartUI(){
-    const items = Object.keys(cart);
-    const totalCount = items.reduce((s,id)=>s+cart[id],0);
-    document.getElementById('cartCount').textContent = totalCount;
-
-    const container = document.getElementById('drawerItems');
-    if(items.length === 0){
-      container.innerHTML = '<div class="empty-cart">Your cart is empty.<br>Something warm is waiting in the collection above.</div>';
-    } else {
-      container.innerHTML = items.map(id => {
-        const p = PRODUCTS.find(x=>x.id===id);
-        return `
-          <div class="cart-item">
-            <div class="swatch-sm" style="background:${SWATCH[id]};"></div>
-            <div class="cart-item-info">
-              <div class="nm">${p.name}</div>
-              <div class="pr">৳${p.price}</div>
-              <div class="qty-row">
-                <button onclick="changeQty('${id}',-1)" aria-label="Decrease quantity">−</button>
-                <span>${cart[id]}</span>
-                <button onclick="changeQty('${id}',1)" aria-label="Increase quantity">+</button>
-              </div>
+        </div>
+        <div class="bestseller-grid">
+            <div class="bestseller-item reveal">
+                <div class="bestseller-rank">01</div>
+                <h3>Premium Garam Masala</h3>
+                <p>Twelve aromatic spices, hand-ground to perfection. The foundation of every great Bangladeshi kitchen.</p>
+                <div class="bestseller-price">৳249</div>
+                <button class="bestseller-btn" onclick="addToCart(1)">Add to Cart</button>
             </div>
-            <button class="remove-x" onclick="removeItem('${id}')">Remove</button>
-          </div>`;
-      }).join('');
-    }
+            <div class="bestseller-item reveal">
+                <div class="bestseller-rank">02</div>
+                <h3>Biryani Masala</h3>
+                <p>A royal blend for the perfect biryani. Makes every grain fragrant, separate, and unforgettable.</p>
+                <div class="bestseller-price">৳199</div>
+                <button class="bestseller-btn" onclick="addToCart(2)">Add to Cart</button>
+            </div>
+            <div class="bestseller-item reveal">
+                <div class="bestseller-rank">03</div>
+                <h3>Turmeric Powder</h3>
+                <p>Sun-dried, stone-ground turmeric with 7%+ curcumin. The deep golden color your daal deserves.</p>
+                <div class="bestseller-price">৳149</div>
+                <button class="bestseller-btn" onclick="addToCart(3)">Add to Cart</button>
+            </div>
+        </div>
+    </section>
 
-    const subtotal = items.reduce((s,id)=> s + cart[id]*PRODUCTS.find(p=>p.id===id).price, 0);
-    document.getElementById('subtotalAmt').textContent = '৳' + subtotal.toLocaleString();
-  }
+    <!-- Our Story -->
+    <section class="section" id="story">
+        <div class="story-grid">
+            <div class="story-img reveal">
+                <img src="https://images.unsplash.com/photo-1626202158822-1c9f39d12305?w=800&h=1000&fit=crop&q=80" alt="Traditional spice preparation">
+            </div>
+            <div class="story-content reveal">
+                <span class="section-label">Our Story</span>
+                <h2>From the <em>Earth</em><br>to Your Kitchen</h2>
+                <p>Hotspy was born from a simple belief — that food tastes better when it is made with love and pure ingredients. What started as sharing homemade masala with neighbors in Dhaka has grown into a mission to bring authentic, organic spices to every kitchen in Bangladesh.</p>
+                <p>Every batch is hand-ground in small quantities to ensure freshness and flavor. We source our ingredients directly from organic farms in Rajshahi, Bogra, and Sylhet, supporting local farmers while delivering unmatched quality.</p>
 
-  function toggleCart(open){
-    document.getElementById('drawer').classList.toggle('open', open);
-    document.getElementById('overlay').classList.toggle('open', open);
-  }
+                <div class="story-steps">
+                    <div class="story-step" data-delay="0">
+                        <span class="story-step-num">01</span>
+                        <div>
+                            <h4>Collection</h4>
+                            <p>Hand-picked from certified organic farms across Bangladesh</p>
+                        </div>
+                    </div>
+                    <div class="story-step" data-delay="1">
+                        <span class="story-step-num">02</span>
+                        <div>
+                            <h4>Clean</h4>
+                            <p>Triple-washed and naturally sun-dried under the open sky</p>
+                        </div>
+                    </div>
+                    <div class="story-step" data-delay="2">
+                        <span class="story-step-num">03</span>
+                        <div>
+                            <h4>Ground</h4>
+                            <p>Stone-ground in small batches to preserve aroma and oils</p>
+                        </div>
+                    </div>
+                    <div class="story-step" data-delay="3">
+                        <span class="story-step-num">04</span>
+                        <div>
+                            <h4>Pack</h4>
+                            <p>Sealed in airtight, food-safe packaging within hours</p>
+                        </div>
+                    </div>
+                    <div class="story-step" data-delay="4">
+                        <span class="story-step-num">05</span>
+                        <div>
+                            <h4>Your Kitchen</h4>
+                            <p>Delivered fresh to your doorstep anywhere in Bangladesh</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
-  function checkoutMock(){
-    if(Object.keys(cart).length === 0){ showToast('Your cart is empty'); return; }
-    showToast('This is a demo — checkout isn\\'t wired to a payment gateway yet');
-  }
+    <!-- Reviews -->
+    <section class="reviews-section" id="reviews">
+        <div class="section-header reveal">
+            <span class="section-label">Testimonials</span>
+            <h2>What People Say</h2>
+            <p>Real reviews from home cooks across Bangladesh.</p>
+        </div>
+        <div style="overflow:hidden;">
+            <div class="reviews-track" id="reviewsTrack"></div>
+        </div>
+    </section>
 
-  function subscribeNews(e){
-    e.preventDefault();
-    document.getElementById('newsNote').textContent = 'You\\'re on the manifest. Watch your inbox.';
-    document.getElementById('newsEmail').value = '';
-    return false;
-  }
+    <!-- How to Order -->
+    <section class="order-section" id="how-to-order">
+        <div class="section" style="padding-bottom:0;">
+            <div class="section-header reveal" style="text-align:center;">
+                <span class="section-label">Ordering</span>
+                <h2>How to Order</h2>
+                <p style="margin:0 auto;">Simple, fast, and personal.</p>
+            </div>
+        </div>
+        <div class="order-grid">
+            <div class="order-step-box reveal">
+                <div class="order-num">1</div>
+                <h4>Choose</h4>
+                <p>Browse our collection and select your favorite masala blends</p>
+            </div>
+            <div class="order-step-box reveal">
+                <div class="order-num">2</div>
+                <h4>Add to Cart</h4>
+                <p>Click to add products. Adjust quantities as needed</p>
+            </div>
+            <div class="order-step-box reveal">
+                <div class="order-num">3</div>
+                <h4>WhatsApp Us</h4>
+                <p>Send your cart via WhatsApp for quick confirmation</p>
+            </div>
+            <div class="order-step-box reveal">
+                <div class="order-num">4</div>
+                <h4>Get Delivered</h4>
+                <p>We pack fresh and deliver anywhere in Bangladesh</p>
+            </div>
+        </div>
+    </section>
 
-  let toastTimer;
-  function showToast(msg){
-    const t = document.getElementById('toast');
-    t.textContent = msg;
-    t.classList.add('show');
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(()=> t.classList.remove('show'), 2400);
-  }
+    <!-- Contact -->
+    <section class="contact-section" id="contact">
+        <div class="section" style="padding-bottom:0;">
+            <div class="section-header reveal" style="text-align:center;">
+                <span class="section-label">Get in Touch</span>
+                <h2>Contact</h2>
+                <p style="margin:0 auto;">We are here to help.</p>
+            </div>
+        </div>
+        <div class="contact-grid">
+            <div class="contact-info-box reveal">
+                <h3>Let's Talk</h3>
 
-  renderGrid('all');
-  updateCartUI();
-</script>
+                <div class="contact-item">
+                    <div class="contact-item-label">Address</div>
+                    <div class="contact-item-value">House 42, Road 7, Block C<br>Banani, Dhaka 1213, Bangladesh</div>
+                </div>
 
+                <div class="contact-item">
+                    <div class="contact-item-label">Phone</div>
+                    <div class="contact-item-value"><a href="tel:+8801712345678">+880 1712-345678</a></div>
+                </div>
+
+                <div class="contact-item">
+                    <div class="contact-item-label">WhatsApp</div>
+                    <div class="contact-item-value"><a href="https://wa.me/8801712345678" target="_blank">+880 1712-345678</a></div>
+                </div>
+
+                <div class="contact-item">
+                    <div class="contact-item-label">Email</div>
+                    <div class="contact-item-value"><a href="mailto:hello@hotspy.bd">hello@hotspy.bd</a></div>
+                </div>
+
+                <div class="contact-item">
+                    <div class="contact-item-label">Hours</div>
+                    <div class="contact-item-value">Saturday — Thursday: 9:00 AM – 8:00 PM<br>Friday: Closed</div>
+                </div>
+            </div>
+
+            <div class="contact-map-box reveal">
+                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3650.3280951567277!2d90.40405507513647!3d23.79362887863406!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3755c70e50c1b1c1%3A0x1c86f7f1e1e1e1e1!2sBanani%2C%20Dhaka!5e0!3m2!1sen!2sbd!4v1700000000000!5m2!1sen!2sbd" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-inner">
+            <a href="#" class="footer-logo">Hot<span>spy</span></a>
+            <p class="footer-copy">© 2026 Hotspy. All rights reserved. Made in Bangladesh.</p>
+            <div class="footer-links">
+                <a href="#products">Products</a>
+                <a href="#bestseller">Best Seller</a>
+                <a href="#story">Our Story</a>
+                <a href="#contact">Contact</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Cart Sidebar -->
+    <div class="cart-overlay" id="cartOverlay"></div>
+    <div class="cart-sidebar" id="cartSidebar">
+        <div class="cart-header">
+            <h3>Your Cart</h3>
+            <button class="cart-close" id="cartClose">✕</button>
+        </div>
+        <div class="cart-items" id="cartItems">
+            <div class="cart-empty">
+                <p>Your cart is empty</p>
+                <p style="font-size:13px;color:var(--text-muted);">Add some spices to begin</p>
+            </div>
+        </div>
+        <div class="cart-footer" id="cartFooter" style="display:none;">
+            <div class="cart-total">
+                <span>Total</span>
+                <span id="cartTotal">৳0</span>
+            </div>
+            <button class="cart-whatsapp" id="cartWhatsapp">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                Order on WhatsApp
+            </button>
+        </div>
+    </div>
+
+    <!-- Product Detail Modal -->
+    <div class="detail-overlay" id="detailOverlay">
+        <div class="detail-modal" id="detailModal">
+            <div class="detail-gallery">
+                <img src="" alt="" class="detail-main-img" id="detailMainImg">
+                <div class="detail-thumbs" id="detailThumbs"></div>
+            </div>
+            <div class="detail-info">
+                <button class="detail-close" id="detailClose">✕</button>
+                <h2 id="detailName">Product</h2>
+                <p class="detail-hook" id="detailHook"></p>
+                <div class="detail-price" id="detailPrice"></div>
+                <ul class="detail-benefits" id="detailBenefits"></ul>
+                <div class="detail-usage">
+                    <h4>Pro Tip</h4>
+                    <p id="detailUsage"></p>
+                </div>
+                <button class="detail-add-btn" id="detailAddBtn">Add to Cart</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ===== DATA =====
+        const products = [
+            {
+                id: 1, name: "Premium Garam Masala",
+                desc: "A rich blend of twelve aromatic spices, hand-ground to perfection for authentic desi flavor.",
+                hook: "This is the masala your grandmother would approve of. Twelve spices, one perfect balance. Add it to biryani and watch the room go silent.",
+                price: 249, oldPrice: 349,
+                img: "https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=600&h=450&fit=crop&q=80",
+                thumbs: [
+                    "https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=200&h=200&fit=crop&q=80",
+                    "https://images.unsplash.com/photo-1626202158822-1c9f39d12305?w=200&h=200&fit=crop&q=80",
+                    "https://images.unsplash.com/photo-1550989460-0adf9ea622e2?w=200&h=200&fit=crop&q=80"
+                ],
+                benefits: ["100% organic farm-fresh spices","No artificial colors or preservatives","Stone-ground for maximum aroma release","Ideal for biryani, curry, and kebabs"],
+                usage: "Add one teaspoon at the final stage of cooking. Best for chicken curry, beef rezala, and mutton biryani.",
+                badge: null
+            },
+            {
+                id: 2, name: "Biryani Masala",
+                desc: "Specially crafted for the perfect biryani. A royal blend that makes every grain fragrant and separate.",
+                hook: "The secret behind every legendary biryani in Old Dhaka. One packet, and you will never need restaurant biryani again.",
+                price: 199, oldPrice: 279,
+                img: "https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=600&h=450&fit=crop&q=80",
+                thumbs: [
+                    "https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=200&h=200&fit=crop&q=80",
+                    "https://images.unsplash.com/photo-1585937421612-70a008356f36?w=200&h=200&fit=crop&q=80",
+                    "https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=200&h=200&fit=crop&q=80"
+                ],
+                benefits: ["Royal Nawabi recipe from Old Dhaka","Makes rice grains fragrant and separate","Balanced heat — family-friendly","Enough for five family-size biryanis"],
+                usage: "Marinate meat with half the pack. Add remaining while layering rice. Seal and cook on dum for forty minutes.",
+                badge: null
+            },
+            {
+                id: 3, name: "Turmeric Powder",
+                desc: "One hundred percent pure organic turmeric with high curcumin content. Vibrant color and earthy aroma.",
+                hook: "Not the pale powder from the supermarket. This is sun-dried, stone-ground gold — the kind that turns your daal into liquid sunshine.",
+                price: 149, oldPrice: 199,
+                img: "https://images.unsplash.com/photo-1615485290382-441e4d049cb5?w=600&h=450&fit=crop&q=80",
+                thumbs: [
+                    "https://images.unsplash.com/photo-1615485290382-441e4d049cb5?w=200&h=200&fit=crop&q=80",
+                    "https://images.unsplash.com/photo-1626202158822-1c9f39d12305?w=200&h=200&fit=crop&q=80",
+                    "https://images.unsplash.com/photo-1550989460-0adf9ea622e2?w=200&h=200&fit=crop&q=80"
+                ],
+                benefits: ["Seven percent plus curcumin content","Deep golden natural color from Rajshahi","Anti-inflammatory and antioxidant","Lab-tested for purity and potency"],
+                usage: "Use half a teaspoon in daal, one teaspoon in fish curry. Mix with warm milk for traditional haldi doodh before bed.",
+                badge: "Organic"
+            },
+            {
+                id: 4, name: "Red Chili Powder",
+                desc: "Sun-dried, organically grown red chilies ground to a fine, vibrant powder. Bold heat, pure flavor.",
+                hook: "Real Bogra chilies, sun-dried for weeks, then stone-ground. The heat is honest. The color is deep. This is what chili powder was meant to be.",
+                price: 129, oldPrice: 179,
+                img: "https://images.unsplash.com/photo-1588165171080-c89acfa5ee83?w=600&h=450&fit=crop&q=80",
+                thumbs: [
+                    "https://images.unsplash.com/photo-1588165171080-c89acfa5ee83?w=200&h=200&fit=crop&q=80",
+                    "https://images.unsplash.com/photo-1626202158822-1c9f39d12305?w=200&h=200&fit=crop&q=80",
+                    "https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=200&h=200&fit=crop&q=80"
+                ],
+                benefits: ["Bogra red chilies — famous for authentic heat","Vibrant red without artificial dye","No additives or color enhancers","Perfect for pickles, curries, and chutneys"],
+                usage: "Start with a quarter teaspoon for mild heat. Fry in oil before adding other spices to unlock full flavor.",
+                badge: null
+            },
+            {
+                id: 5, name: "Chaat Masala",
+                desc: "The perfect tangy, spicy blend for snacks and street food. Sprinkle on fruits, salads, or chaat.",
+                hook: "That irresistible tang from your favorite fuchka wala in Gulshan? It is this. Now make street-food magic at home, anytime you want.",
+                price: 99, oldPrice: 149,
+                img: "https://images.unsplash.com/photo-1626202158822-1c9f39d12305?w=600&h=450&fit=crop&q=80",
+                thumbs: [
+                    "https://images.unsplash.com/photo-1626202158822-1c9f39d12305?w=200&h=200&fit=crop&q=80",
+                    "https://images.unsplash.com/photo-1550989460-0adf9ea622e2?w=200&h=200&fit=crop&q=80",
+                    "https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=200&h=200&fit=crop&q=80"
+                ],
+                benefits: ["Authentic street-food flavor profile","Perfect balance of tangy, spicy, and salty","Sprinkle on fruit, chips, eggs, or salad","A little goes a very long way"],
+                usage: "Sprinkle on fuchka, chotpoti, fruit chaat, or buttered corn. Add a pinch to lemonade for a spicy twist.",
+                badge: null
+            },
+            {
+                id: 6, name: "Kitchen King Masala",
+                desc: "The all-rounder spice blend for everyday cooking. One masala, endless possibilities.",
+                hook: "Tired of ten different jars cluttering your kitchen? This one blend handles everything — from weekday daal to Sunday chicken roast.",
+                price: 179, oldPrice: 249,
+                img: "https://images.unsplash.com/photo-1550989460-0adf9ea622e2?w=600&h=450&fit=crop&q=80",
+                thumbs: [
+                    "https://images.unsplash.com/photo-1550989460-0adf9ea622e2?w=200&h=200&fit=crop&q=80",
+                    "https://images.unsplash.com/photo-1626202158822-1c9f39d12305?w=200&h=200&fit=crop&q=80",
+                    "https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=200&h=200&fit=crop&q=80"
+                ],
+                benefits: ["All-in-one everyday masala blend","Works for vegetable, chicken, beef, and fish","Saves time — no measuring five spices","Consistent, reliable taste every time"],
+                usage: "Use one to two teaspoons for any curry, stir-fry, or sabzi. Add after onions turn golden brown.",
+                badge: null
+            }
+        ];
+
+        const reviews = [
+            { name: "Fatima Rahman", loc: "Dhaka", avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop&crop=face", text: "The garam masala changed my biryani game forever. My husband asked if I ordered from Star." },
+            { name: "Rahim Khan", loc: "Chittagong", avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face", text: "Finally, real turmeric. The color is unbelievable. My haldi doodh tastes like my nanu's." },
+            { name: "Ayesha Siddiqua", loc: "Sylhet", avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop&crop=face", text: "Ordered the chaat masala on a whim. Now I put it on everything. Even my salad. No regrets." },
+            { name: "Kamal Hossain", loc: "Rajshahi", avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop&crop=face", text: "Fast delivery to Rajshahi. Packaging was premium. The biryani masala is legitimately royal." },
+            { name: "Nusrat Jahan", loc: "Khulna", avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&h=100&fit=crop&crop=face", text: "As a nutritionist, I can confirm this is one hundred percent pure. No fillers, no nonsense." },
+            { name: "Tanvir Ahmed", loc: "Barisal", avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face", text: "Bought the Kitchen King for my mother. She said it reminds her of her mother's spice box." },
+            { name: "Sultana Begum", loc: "Mymensingh", avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop&crop=face", text: "The red chili powder has real heat. Not that fake red color stuff. My pickle is perfect now." },
+            { name: "Imran Mahmud", loc: "Rangpur", avatar: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=100&h=100&fit=crop&crop=face", text: "Third time ordering. Consistent quality every single time. Hotspy is now my permanent supplier." },
+            { name: "Parveen Akter", loc: "Cox's Bazar", avatar: "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=100&h=100&fit=crop&crop=face", text: "Even in Cox's Bazar, delivery was fast and fresh. The aroma when I opened the pack was incredible." }
+        ];
+
+        let cart = JSON.parse(localStorage.getItem('hotspy_cart')) || [];
+
+        // ===== RENDER =====
+        function renderProducts() {
+            document.getElementById('productsGrid').innerHTML = products.map(p => `
+                <div class="product-card reveal" onclick="openDetail(${p.id})">
+                    ${p.badge ? `<span class="product-badge">${p.badge}</span>` : ''}
+                    <div class="product-img-wrap">
+                        <img src="${p.img}" alt="${p.name}" class="product-img">
+                        <div class="product-view"><span>View Details</span></div>
+                    </div>
+                    <div class="product-info">
+                        <h3>${p.name}</h3>
+                        <p>${p.desc}</p>
+                        <div class="product-meta">
+                            <div class="product-price">
+                                ৳${p.price}${p.oldPrice ? `<span>৳${p.oldPrice}</span>` : ''}
+                            </div>
+                            <button class="product-add" onclick="event.stopPropagation(); addToCart(${p.id})" aria-label="Add">+</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderReviews() {
+            const track = document.getElementById('reviewsTrack');
+            const all = [...reviews, ...reviews];
+            track.innerHTML = all.map(r => `
+                <div class="review-card">
+                    <div class="review-stars">★ ★ ★ ★ ★</div>
+                    <p class="review-text">${r.text}</p>
+                    <div class="review-author">
+                        <img src="${r.avatar}" alt="${r.name}" class="review-avatar">
+                        <div>
+                            <h4>${r.name}</h4>
+                            <p>${r.loc}</p>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // ===== DETAIL MODAL =====
+        function openDetail(id) {
+            const p = products.find(x => x.id === id);
+            if (!p) return;
+
+            document.getElementById('detailMainImg').src = p.img;
+            document.getElementById('detailMainImg').alt = p.name;
+            document.getElementById('detailName').textContent = p.name;
+            document.getElementById('detailHook').textContent = p.hook;
+            document.getElementById('detailPrice').innerHTML = `৳${p.price}${p.oldPrice ? `<span>৳${p.oldPrice}</span>` : ''}`;
+            document.getElementById('detailUsage').textContent = p.usage;
+            document.getElementById('detailBenefits').innerHTML = p.benefits.map(b => `<li>${b}</li>`).join('');
+            document.getElementById('detailThumbs').innerHTML = p.thumbs.map((t, i) => `
+                <img src="${t}" class="detail-thumb ${i===0?'active':''}" onclick="changeThumb('${t}',this)" alt="view ${i+1}">
+            `).join('');
+            document.getElementById('detailAddBtn').onclick = () => { addToCart(p.id); closeDetail(); };
+
+            document.getElementById('detailOverlay').classList.add('active');
+            document.body.style.overflow = 'hidden';
+            if (typeof fbq !== 'undefined') fbq('track', 'ViewContent', { content_ids: [id], content_type: 'product' });
+            if (typeof ttq !== 'undefined') ttq.track('ViewContent', { content_id: id, content_type: 'product' });
+        }
+
+        function changeThumb(src, el) {
+            document.getElementById('detailMainImg').src = src;
+            document.querySelectorAll('.detail-thumb').forEach(t => t.classList.remove('active'));
+            el.classList.add('active');
+        }
+
+        function closeDetail() {
+            document.getElementById('detailOverlay').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        document.getElementById('detailClose').addEventListener('click', closeDetail);
+        document.getElementById('detailOverlay').addEventListener('click', e => { if (e.target === e.currentTarget) closeDetail(); });
+
+        // ===== CART =====
+        function addToCart(id) {
+            const p = products.find(x => x.id === id);
+            const existing = cart.find(x => x.id === id);
+            if (existing) existing.qty++;
+            else cart.push({ ...p, qty: 1 });
+            saveCart(); updateCart();
+            if (typeof fbq !== 'undefined') fbq('track', 'AddToCart', { content_ids: [id], content_type: 'product', value: p.price, currency: 'BDT' });
+            if (typeof ttq !== 'undefined') ttq.track('AddToCart', { content_id: id, content_type: 'product', value: p.price, currency: 'BDT' });
+        }
+
+        function removeFromCart(id) {
+            cart = cart.filter(x => x.id !== id);
+            saveCart(); updateCart();
+        }
+
+        function updateQty(id, delta) {
+            const item = cart.find(x => x.id === id);
+            if (!item) return;
+            item.qty += delta;
+            if (item.qty <= 0) removeFromCart(id);
+            else { saveCart(); updateCart(); }
+        }
+
+        function saveCart() { localStorage.setItem('hotspy_cart', JSON.stringify(cart)); }
+        function cartTotal() { return cart.reduce((s, i) => s + i.price * i.qty, 0); }
+        function cartCount() { return cart.reduce((s, i) => s + i.qty, 0); }
+
+        function updateCart() {
+            const count = cartCount();
+            document.getElementById('cartCount').textContent = count;
+            const items = document.getElementById('cartItems');
+            const footer = document.getElementById('cartFooter');
+
+            if (!cart.length) {
+                items.innerHTML = `
+                    <div class="cart-empty">
+                        <p>Your cart is empty</p>
+                        <p style="font-size:13px;color:var(--text-muted);">Add some spices to begin</p>
+                    </div>
+                `;
+                footer.style.display = 'none';
+            } else {
+                items.innerHTML = cart.map(i => `
+                    <div class="cart-item">
+                        <img src="${i.img}" alt="${i.name}">
+                        <div class="cart-item-info">
+                            <h4>${i.name}</h4>
+                            <p>৳${i.price}</p>
+                            <div class="cart-qty">
+                                <button onclick="updateQty(${i.id},-1)">−</button>
+                                <span>${i.qty}</span>
+                                <button onclick="updateQty(${i.id},1)">+</button>
+                            </div>
+                        </div>
+                        <button class="cart-remove" onclick="removeFromCart(${i.id})">Remove</button>
+                    </div>
+                `).join('');
+                footer.style.display = 'block';
+                document.getElementById('cartTotal').textContent = '৳' + cartTotal();
+            }
+        }
+
+        // ===== WHATSAPP =====
+        function waLink() {
+            const phone = '8801712345678';
+            let msg = `Hello Hotspy, I would like to place an order:%0A%0A`;
+            cart.forEach(i => msg += `• ${i.name} x${i.qty} = ৳${i.price * i.qty}%0A`);
+            msg += `%0ATotal: ৳${cartTotal()}%0A%0APlease confirm my order.`;
+            return `https://wa.me/${phone}?text=${msg}`;
+        }
+
+        document.getElementById('cartWhatsapp').addEventListener('click', () => {
+            if (!cart.length) return;
+            window.open(waLink(), '_blank');
+            if (typeof fbq !== 'undefined') fbq('track', 'InitiateCheckout', { content_ids: cart.map(i=>i.id), content_type: 'product', value: cartTotal(), currency: 'BDT' });
+            if (typeof ttq !== 'undefined') ttq.track('InitiateCheckout', { content_ids: cart.map(i=>i.id), content_type: 'product', value: cartTotal(), currency: 'BDT' });
+        });
+
+        // ===== CART SIDEBAR =====
+        function openCart() {
+            document.getElementById('cartOverlay').classList.add('active');
+            document.getElementById('cartSidebar').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+        function closeCart() {
+            document.getElementById('cartOverlay').classList.remove('active');
+            document.getElementById('cartSidebar').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+        document.getElementById('navCart').addEventListener('click', openCart);
+        document.getElementById('cartClose').addEventListener('click', closeCart);
+        document.getElementById('cartOverlay').addEventListener('click', closeCart);
+
+        // ===== MOBILE MENU =====
+        function openMobile() {
+            document.getElementById('mobileOverlay').classList.add('active');
+            document.getElementById('mobileMenu').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+        function closeMobile() {
+            document.getElementById('mobileOverlay').classList.remove('active');
+            document.getElementById('mobileMenu').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+        document.getElementById('mobileBtn').addEventListener('click', openMobile);
+        document.getElementById('mobileClose').addEventListener('click', closeMobile);
+        document.getElementById('mobileOverlay').addEventListener('click', closeMobile);
+        document.querySelectorAll('.mobile-links a').forEach(a => a.addEventListener('click', closeMobile));
+
+        // ===== NAVBAR SCROLL =====
+        window.addEventListener('scroll', () => {
+            const nav = document.getElementById('nav');
+            if (window.scrollY > 50) nav.classList.add('scrolled');
+            else nav.classList.remove('scrolled');
+        });
+
+        // ===== SCROLL REVEAL =====
+        function reveal() {
+            document.querySelectorAll('.reveal').forEach(el => {
+                if (el.getBoundingClientRect().top < window.innerHeight - 60) el.classList.add('active');
+            });
+        }
+        window.addEventListener('scroll', reveal);
+        window.addEventListener('load', reveal);
+
+        // ===== STORY STEPS =====
+        function animateStory() {
+            const steps = document.querySelectorAll('.story-step');
+            steps.forEach((step, i) => {
+                if (step.getBoundingClientRect().top < window.innerHeight - 40) {
+                    setTimeout(() => step.classList.add('visible'), i * 150);
+                }
+            });
+        }
+        window.addEventListener('scroll', animateStory);
+        window.addEventListener('load', animateStory);
+
+        // ===== SMOOTH SCROLL =====
+        document.querySelectorAll('a[href^="#"]').forEach(a => {
+            a.addEventListener('click', e => {
+                e.preventDefault();
+                const t = document.querySelector(a.getAttribute('href'));
+                if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+        });
+
+        // ===== INIT =====
+        renderProducts();
+        renderReviews();
+        updateCart();
+    </script>
 </body>
 </html>
